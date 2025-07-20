@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>توصية الذكاء الاصطناعي | Yahya Trend</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    .container {
+      background-color: #222;
+      padding: 30px;
+      border-radius: 10px;
+      display: inline-block;
+      max-width: 500px;
+      margin-top: 30px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 توصية الذكاء الاصطناعي - EUR/USD</h1>
+    <p id="price">السعر اللحظي: ...</p>
+    <p id="recommendation">التوصية: ...</p>
+    <p id="time">⏰ ...</p>
+  </div>
+
+  <script>
+    const token = "MJPXRBjyjTtzvtZ";
+    const ws = new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
+
+    let latestPrice = null;
+
+    ws.onopen = function () {
+      ws.send(JSON.stringify({ authorize: token }));
+      ws.send(JSON.stringify({ ticks_subscribe: "frxEURUSD" }));
+    };
+
+    ws.onmessage = function (msg) {
+      const data = JSON.parse(msg.data);
+      if (data.msg_type === "tick") {
+        latestPrice = parseFloat(data.tick.quote);
+        const recommendation = getAIRecommendation(latestPrice);
+        document.getElementById("price").innerText = `السعر اللحظي: ${latestPrice}`;
+        document.getElementById("recommendation").innerText = `التوصية: ${recommendation}`;
+        document.getElementById("time").innerText = `⏰ ${new Date().toLocaleTimeString('ar-EG')}`;
+      }
+    };
+
+    function getAIRecommendation(price) {
+      if (price > 1.0850) return "📉 بيع (ذكاء اصطناعي)";
+      else if (price < 1.0800) return "📈 شراء (ذكاء اصطناعي)";
+      else return "⏳ انتظر، السوق غير واضح";
+    }
+  </script>
+</body>
+</html>
